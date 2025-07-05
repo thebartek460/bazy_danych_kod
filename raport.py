@@ -1,6 +1,6 @@
 """
 Moduł: raport.py
-Zawiera funkcje do raportowania danych z bazy przychodni.
+Zawiera funkcje do wczytywania danych i tworzenia raportów.
 """
 
 import csv
@@ -14,22 +14,23 @@ def zaladuj_dane(sciezka_csv):
         sciezka_csv (str): Ścieżka do pliku CSV.
 
     Returns:
-        list: Lista rekordów jako słowniki.
+        list: Lista słowników reprezentujących rekordy.
     """
-    with open(sciezka_csv, newline='', encoding='utf-8') as csvfile:
-        return list(csv.DictReader(csvfile))
+    with open(sciezka_csv, newline='', encoding='utf-8') as plik:
+        return list(csv.DictReader(plik))
 
 def raport_ogolny(wizyty, lekarze):
     """
-    Generuje raport podsumowujący liczbę wizyt dla każdego lekarza.
+    Wyświetla liczbę wizyt przypisanych do każdego lekarza.
 
     Args:
-        wizyty (list): Lista wizyt.
-        lekarze (list): Lista lekarzy.
+        wizyty (list): Lista słowników wizyt.
+        lekarze (list): Lista słowników lekarzy.
     """
-    lekarz_map = {lekarz['id']: f"{lekarz['first_name']} {lekarz['last_name']}" for lekarz in lekarze}
-    licznik = Counter(wizyta['doctor_id'] for wizyta in wizyty)
+    map_lekarzy = {l["id"]: f'{l["first_name"]} {l["last_name"]}' for l in lekarze}
+    licznik = Counter(w["doctor_id"] for w in wizyty)
 
-    print("Liczba wizyt na lekarza:")
-    for doc_id, liczba in licznik.items():
-        print(f"- {lekarz_map.get(doc_id, 'Nieznany')} ({doc_id}): {liczba} wizyt")
+    print("\n=== Liczba wizyt dla każdego lekarza ===")
+    for id_lekarza, liczba in licznik.items():
+        nazwisko = map_lekarzy.get(id_lekarza, "Nieznany lekarz")
+        print(f"- {nazwisko} ({id_lekarza}): {liczba} wizyt")
